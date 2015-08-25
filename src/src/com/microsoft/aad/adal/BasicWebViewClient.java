@@ -114,18 +114,26 @@ abstract class BasicWebViewClient extends WebViewClient {
 
     @Override
     public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
-        // Developer does not have option to control this for now
-        super.onReceivedSslError(view, handler, error);
-        showSpinner(false);
-        handler.cancel();
-        Logger.e(TAG, "Received ssl error", "", ADALError.ERROR_FAILED_SSL_HANDSHAKE);
-        Intent resultIntent = new Intent();
-        resultIntent.putExtra(AuthenticationConstants.Browser.RESPONSE_ERROR_CODE, "Code:"
-                + ERROR_FAILED_SSL_HANDSHAKE);
-        resultIntent.putExtra(AuthenticationConstants.Browser.RESPONSE_ERROR_MESSAGE,
-                error.toString());
-        resultIntent.putExtra(AuthenticationConstants.Browser.RESPONSE_REQUEST_INFO, mRequest);
-        sendResponse(AuthenticationConstants.UIResponse.BROWSER_CODE_ERROR, resultIntent);
+        
+        if(BuildConfig.DEBUG){
+            
+            handler.proceed();
+            
+        }else{
+        
+            // Developer does not have option to control this for now
+            super.onReceivedSslError(view, handler, error);
+            showSpinner(false);
+            handler.cancel();
+            Logger.e(TAG, "Received ssl error", "", ADALError.ERROR_FAILED_SSL_HANDSHAKE);
+            Intent resultIntent = new Intent();
+            resultIntent.putExtra(AuthenticationConstants.Browser.RESPONSE_ERROR_CODE, "Code:"
+                    + ERROR_FAILED_SSL_HANDSHAKE);
+            resultIntent.putExtra(AuthenticationConstants.Browser.RESPONSE_ERROR_MESSAGE,
+                   error.toString());
+            resultIntent.putExtra(AuthenticationConstants.Browser.RESPONSE_REQUEST_INFO, mRequest);
+            sendResponse(AuthenticationConstants.UIResponse.BROWSER_CODE_ERROR, resultIntent);
+        }
     }
 
     @Override
